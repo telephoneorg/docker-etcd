@@ -23,15 +23,14 @@ The following variables are standard in most of our dockerfiles to reduce duplic
 
 ## Run Environment
 Run environment variables are used in the entrypoint script to render configuration templates, perform flow control, etc.  These values can be overridden when inheriting from the base dockerfile, specified during `docker run`, or in kubernetes manifests in the `env` array.
+* `ETCD_BOOTSTRAP_NAMES`: Comma seperated list of names. Iterated and resolved as such: `$name.$(dnsdomainname)` to build the value for `ETCD_INITIAL_CLUSTER`.
+* `ETCD_INITIAL_CLUSTER_TOKEN`: Passed through to etcd.  If not set, static, insecure default is used.
 
-      ETCD_BOOTSTRAP_NAMES: saturn,jupiter,pluto
-      ETCD_INITIAL_CLUSTER_TOKEN: 2ee9705598dc06df3ab66bbea3a3d440
-
-* `ETCD_BOOTSTRAP_NAMES`: iterated over and resolved as such: `$name.$(dnsdomainname)` and assigned to `ETCD_INITIAL_CLUSTER`.
-* `ETCD_INITIAL_CLUSTER_TOKEN`: used as the value for the `vm_memory_high_watermark` tuple in the `rabbitmq.config` file.
-
-
-ref: https://coreos.com/etcd/docs/latest/op-guide/configuration.html
+**Documentation refs:**
+* https://coreos.com/etcd/docs/latest/faq.html
+* https://coreos.com/etcd/docs/latest/op-guide/configuration.html
+* https://coreos.com/etcd/docs/latest/op-guide/maintenance.html
+* https://coreos.com/etcd/docs/latest/op-guide/recovery.html
 
 
 ## Usage
@@ -50,10 +49,8 @@ docker run -d \
     --name rabbitmq \
     -h host1.domain.local \
     -e "ETCD_BOOTSTRAP_NAMES=host1,host2" \
-    -e "RABBITMQ_USE_LONGNAME=true" \
     telephoneorg/rabbitmq
 ```
-
 **NOTE:** Please reference the Run Environment section for a list of available environment variables.
 
 
@@ -74,19 +71,16 @@ docker-compose up -d
 
 
 ### Under Kubernetes
-Edit the manifests under `kubernetes/<environment>` to reflect your specific environment and configuration.
-
-Create a secret for the erlang cookie:
+* Edit the manifests under `kubernetes/<environment>` to reflect your specific environment and configuration.
+* Deploy etcd as static pod:
 ```bash
-kubectl create secret generic erlang --from-literal=erlang.cookie=$(LC_ALL=C tr -cd '[:alnum:]' < /dev/urandom | head -c 64)
+scp kubernetes/production/static.yaml $node:/etc/kubernetes/manifests/etcd-static.yaml
 ```
 
-Create a secret for the rabbitmq credentials:
-```bash
-kubectl create secret generic rabbitmq --from-literal=rabbitmq.user=$(sed $(perl -e "print int rand(99999)")"q;d" /usr/share/dict/words) --from-literal=rabbitmq.pass=$(LC_ALL=C tr -cd '[:alnum:]' < /dev/urandom | head -c 32)
-```
 
-Deploy rabbitmq:
-```bash
-kubectl create -f kubernetes/<environment>
-```
+### Troubleshooting
+#### Problem
+etcd server on one node is down and refuses to connect back to the cluster.
+
+#### Solutions
+* Check that the ip addresses haven't changed

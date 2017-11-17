@@ -19,7 +19,7 @@ spec:
     - name: ETCD_BOOTSTRAP_NAMES
       value: saturn,jupiter,pluto
     - name: ETCD_INITIAL_CLUSTER_TOKEN
-      value: 72ce4328e55e62eac5ada6c1201cbe0b
+      value: 6a86321db6eb56c3c8f39967dcdf60c0
     ports:
     - name: client
       containerPort: 2379
@@ -37,7 +37,7 @@ spec:
     readinessProbe:
       httpGet:
         host: 127.0.0.1
-        port: 2379
+        port: 4001
         path: /health
       initialDelaySeconds: 10
       timeoutSeconds: 15

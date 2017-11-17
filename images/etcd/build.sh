@@ -31,9 +31,11 @@ fixattrs
 EOF
 
 
+log::m-info "Configuring fixattrs ..."
 tee /etc/fixattrs.d/40-${APP}-own-state-dirs <<EOF
-/var/lib/etcd true $USER:$USER 0775 0775
-/etc/ssl/etcd true $USER:$USER 0711 0755
+/var/lib/etcd true root:root 0775 0775
+/etc/ssl/etcd true root:root 0644 0775
+/etc/ssl/etcd/*key.pem false root:root 0640 0640
 EOF
 
 
