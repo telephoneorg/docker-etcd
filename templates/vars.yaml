@@ -1,0 +1,5 @@
+name: etcd
+images:
+  etcd: telephoneorg/etcd:latest
+bootstrap:
+  names: saturn,jupiter,pluto

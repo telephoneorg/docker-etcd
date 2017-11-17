@@ -1,0 +1,68 @@
+---
+target: kubernetes/production/static.yaml
+---
+
+{%- set vars = data['vars'] -%}
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: etcd
+  namespace: kube-system
+  labels:
+    k8s-app: etcd
+    tier: control-plane
+    component: state-database
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ''
+spec:
+  hostNetwork: true
+  containers:
+  - name: etcd
+    image: {{ vars['images']['etcd'] }}
+    imagePullPolicy: IfNotPresent
+    env:
+    - name: ETCD_BOOTSTRAP_NAMES
+      value: {{ vars['bootstrap']['names'] }}
+    - name: ETCD_INITIAL_CLUSTER_TOKEN
+      value: {{ gen_token()|md5 }}
+    ports:
+    - name: client
+      containerPort: 2379
+    - name: peer
+      containerPort: 2380
+    - name: admin
+      containerPort: 4001
+    resources:
+      requests:
+        cpu: 500m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    readinessProbe:
+      httpGet:
+        host: 127.0.0.1
+        port: 2379
+        path: /health
+      initialDelaySeconds: 10
+      timeoutSeconds: 15
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        port: 4001
+        path: /health
+      initialDelaySeconds: 45
+      timeoutSeconds: 15
+    volumeMounts:
+    - name: etcd-data
+      mountPath: /var/lib/etcd
+    - name: etcd-ssl
+      mountPath: /etc/ssl/etcd
+  volumes:
+  - name: etcd-data
+    hostPath:
+      path: /var/lib/etcd
+  - name: etcd-ssl
+    hostPath:
+      path: /etc/ssl/etcd

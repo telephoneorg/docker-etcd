@@ -1,0 +1,64 @@
+version: '2.3'
+services:
+  saturn:
+    container_name: saturn
+    hostname: saturn.telephone.org
+    build:
+      context: images/etcd
+      args:
+        ETCD_VERSION: '3.0.17'
+    image: telephoneorg/etcd:${DOCKER_TAG:-latest}
+    environment:
+      ETCD_BOOTSTRAP_NAMES: saturn,jupiter,pluto
+      ETCD_BIND_INTERFACE: eth0
+      ETCD_USE_TLS: 'false'
+    tmpfs:
+    - /var/lib/etcd
+    networks:
+      public:
+        aliases:
+        - saturn.telephone.org
+      private:
+        aliases:
+        - saturn.local.telephone.org
+  jupiter:
+    container_name: jupiter
+    hostname: jupiter.telephone.org
+    image: telephoneorg/etcd:${DOCKER_TAG:-latest}
+    environment:
+      ETCD_BOOTSTRAP_NAMES: saturn,jupiter,pluto
+      ETCD_BIND_INTERFACE: eth0
+      DEBUG: 'true'
+      ETCD_USE_TLS: 'false'
+    tmpfs:
+    - /var/lib/etcd
+    networks:
+      public:
+        aliases:
+        - jupiter.telephone.org
+      private:
+        aliases:
+        - jupiter.local.telephone.org
+  pluto:
+    container_name: pluto
+    hostname: pluto.telephone.org
+    image: telephoneorg/etcd:${DOCKER_TAG:-latest}
+    environment:
+      ETCD_BOOTSTRAP_NAMES: saturn,jupiter,pluto
+      ETCD_BIND_INTERFACE: eth0
+      ETCD_USE_TLS: 'false'
+    tmpfs:
+    - /var/lib/etcd
+    networks:
+      public:
+        aliases:
+        - pluto.telephone.org
+      private:
+        aliases:
+        - pluto.local.telephone.org
+networks:
+  public:
+  private:
+    ipam:
+      config:
+      - subnet: 10.1.0.0/16

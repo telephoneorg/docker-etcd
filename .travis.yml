@@ -1,0 +1,30 @@
+language: python
+python:
+- "3.6"
+services: docker
+env:
+  global:
+  # DOCKER_PASS
+  - secure: "1tXvS8XbUflW9V26XoS4S+HD9JDaVIKgs0X1R+I5bFGzwvGMxCIOI/l5RNPf6IrLQFxOm2rHLfX8BRY/yiL4lFdvmDMnX6LhrufGdyqNce7HjKCd2H/N8IrnOAMZRDLsGOUn2j7K6w3YoKhz9kYL4FfjmLoBa8DktGXMd4kNZ0e/XHWVRLSKzLgwz+Hym53Hcuf6EefLZGCBVXJDOEC5cqEAMDcaWLqg6e1gNBRA2qICfvSOz0O+cYo1YgQFZnTsZraNM1PRpH15f6uG4sT/eNGIfhYkrDLN2aBSGt5a603KsKf8FSOJ1fLvMDWNJjvv7SMOACTuviQIqDdypVBLchvObgP2QgFqRjr5g1S1qJfEq0zRQmhpiQAiq7/stKNsHWe57F0PFzr65S11VlIDr3jCxtuZScFVRTuI2E46gJDmIRxdz138+muykQpgKAJdk5yqDb2/j/YIsM13C3YbVs6rJ1hkNBMoAtoTEQ3uZ5Zvd1J8xAjJ7l65A2emFsHvyeN53xSD8RHGWX4aS5xSFZk6PpEsFz23lL3INXnYQvYBsSK4c/MaFAgCC1HPJhZuSRVQpTYR6UeOcHrzkZFGDO6X+j8qpO3yqZxWvPcZG/9h/eusBO/8sQJm1PNXD7/4N9kkUlb2/Xc8wDZvlckkxRKPfWyUyGHvlSfohLgy6Ng="
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+  slack:
+    rooms:
+    - secure: "MAxO84IvF3qz4RQmoqoc8u+VuCQwm4uQT2NcJLEH+X4vwXbt21oZgKS8k911eWyN/JipJyz/NVj4rk+Hkbw4N389vZMmXDXu0KFXbopZquGgfq0zzfSUx7j4c7uV057ECDsW81jYz1ij/8KKAqGfAi1EIZS8GUfpxMeHkDKmBEGPFh+F2ygEnPS4lJ5fz7i8p7gxcPxu+uo0ggY54KN/Xuxkcfflx5o8OfFDBsJQV3UxE1buFm5QSoLB4eHeRWY7N+cxDl9+/owyuaOso1Ic/JZaFu3mWBFpzwGY2sFd16UNB7WqrbILnQFCESyYT9oVRwlFafdOugfjP0TVLHCc1psOZ+2lVXZHoTw1b73SITzkBaW2DrUFZXwrG9DnH6JvEsW4b8o/wsCNk3s0Z/lyKeMN23jGTEDPCHktRuQSzrL4G7BjEuAcIyYiOo9uVlxgIctTV+DmUsNHHi7RNt+expuA8t3Pl2tUWGCZI7cJKhpl1pLFZRIU82ht5uvaiqTIiOiA1Jum4y40tKqAXPecf1UDu2ratoiQM/1QJ21dkPSjqIJY9hYZKJvT9Vc0+vJ3ggBio4npZeJU6hgtNj9X0+snNwYc4+N0y6eIEvCDc5m8gkWhiXokvYFg5Os2rQVJESMD8krdZO5HolJP9njoc7lsgmZUe37Zobd8ugb4Ajk="
+    on_success: always
+    on_failure: always
+
+before_install: pip install --upgrade requests docker-compose invoke yaml
+
+install: inv dc.build
+
+# script: inv test
+script: true
+
+after_success:
+- inv ci.tag-build
+- inv hub.push
+- inv hub.update-readme
