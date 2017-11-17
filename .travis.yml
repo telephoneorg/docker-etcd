@@ -16,7 +16,7 @@ notifications:
     - secure: "E2wa+DSWatvVCO+qwGjDdlwbA8bRKWHNtgExJ7hPYVLqtBuQaX7OOdn6bpbpgf0i4hFbtVANW7HJz8kE07Q20MiUla0gI0vdbuZrW/MZ0YlenC6qvUZ34FpftX9VQi5Kgn57a/DRInDoWvoeFKEA5ERCTsMd0GTgAPpv+BR4xrx4cQp0W9pDrwuZYzrFLCaLwWZHJjYeYRgbvyu1n1ri4jrP45/xbHyRTSxDe3cXwYtBJDvymMwbZkr91gC+lQZUVQM63kCghF8RGatvE7KOkZlNnCEqxeMRr4ueJuk8Iegm8fkiuolpEVS/mqNciE4+bklCFgRfiODUuX+HVRMwMn8jALzbRH5PN2dW6e1aJlWzRPhJcJXeGeYQOOJLLUn6JGwz2caRtdgPYTx7j00gcbuxfN1bGIPhuOjRaM/cVqdA0VBBv+gll5ecylvKRtEhM16yW9LSKEZIRlrXpU4SVVdcLQ7SOKiJN9DPljWyu47QGV5DJRtIwhxhpPRP3rzPxyVBa+9hSVqZURXlEdKEgqssruTpULMgrlDm0sMX2+ER3NlMo9NNb2/rdBsEQ+2q/BgS/Imw3aMp1tJPjVPqhmP+u5Nz0iecNLCB9NZeDU7YLhrwXPafSN/zwAqG19+U1TTBc/+MOLpfzGvGTXfggJ2kBnqsqW47pslMhqoxMkU="
     on_failure: always
 
-before_install: pip install --upgrade requests docker-compose invoke yaml
+before_install: pip install --upgrade requests docker-compose invoke pyyaml
 
 install: inv dc.build
 
